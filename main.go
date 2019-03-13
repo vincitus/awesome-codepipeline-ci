@@ -106,6 +106,9 @@ func Handle(evt json.RawMessage, ctx *runtime.Context) (string, error) {
 		} else if *prEvt.PullRequest.State == "closed" {
 			if pipelineExists(prName) {
 				err := destroyPipeline(prName)
+				if v, ok := err.(awserr.Error); ok {
+					log.Printf("failed: %#v %#v\n", v.Message(), v.OrigErr())
+				}
 			}
 		}
 		rsp.Header["X-GitHub-Delivery"] = payload.Header["X-GitHub-Delivery"]
